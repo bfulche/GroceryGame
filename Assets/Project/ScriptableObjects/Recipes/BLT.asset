@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BLT
   m_EditorClassIdentifier: 
   recipeName: BLT
-  recipeImage: {fileID: 0}
+  recipeImage: {fileID: 21300000, guid: a72746e7c156ba04d93fa001614f15f9, type: 3}
   description: A traditional bacon, lettuce, and tomato sandwich. Don't forget the
     mayo!
   requiredIngredients:

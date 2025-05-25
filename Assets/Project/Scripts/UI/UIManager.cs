@@ -37,10 +37,16 @@ namespace GroceryGame.UI
         public void ShowRecipeSelection(List<Recipe> recipes)
         {
             HideAllPanels();
-            if (recipeSelectionPanel) recipeSelectionPanel.SetActive(true);
-            Debug.Log($"Recipe selection displayed with {recipes.Count} recipes");
-
-            // We'll implement the recipe card creation later
+            if (recipeSelectionPanel)
+            {
+                recipeSelectionPanel.SetActive(true);
+                // Find and initialize the recipe carousel
+                RecipeCarouselUI carousel = recipeSelectionPanel.GetComponentInChildren<RecipeCarouselUI>();
+                if (carousel != null)
+                {
+                    carousel.InitializeCarousel(recipes);
+                }
+            }
         }
 
         // Hide recipe selection
@@ -53,10 +59,16 @@ namespace GroceryGame.UI
         public void ShowStoreSelection(List<StoreLocation> stores)
         {
             HideAllPanels();
-            if (storeSelectionPanel) storeSelectionPanel.SetActive(true);
-            Debug.Log($"Store selection displayed with {stores.Count} stores");
-
-            // We'll implement the store card creation later
+            if (storeSelectionPanel)
+            {
+                storeSelectionPanel.SetActive(true);
+                // Find and initialize the store carousel
+                StoreCarouselUI carousel = storeSelectionPanel.GetComponentInChildren<StoreCarouselUI>();
+                if (carousel != null)
+                {
+                    carousel.InitializeCarousel(stores);
+                }
+            }
         }
 
         // Hide store selection
