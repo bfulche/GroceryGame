@@ -13,10 +13,12 @@ namespace GroceryGame.UI
         [SerializeField] private TextMeshProUGUI recipeNameText;
         [SerializeField] private TextMeshProUGUI descriptionText;
         [SerializeField] private Transform ingredientsContainer;
-        [SerializeField] private Button selectButton;
 
         [Header("Ingredient Item")]
         [SerializeField] private GameObject ingredientItemPrefab;
+
+        [Header("Layout Settings")]
+        [SerializeField] private float ingredientSpacing = 8f; // Adjustable in inspector
 
         private Recipe recipe;
 
@@ -47,17 +49,6 @@ namespace GroceryGame.UI
             {
                 PopulateIngredients();
             }
-
-            // Handle select button
-            if (selectButton != null)
-            {
-                selectButton.gameObject.SetActive(showSelectButton);
-                if (showSelectButton)
-                {
-                    selectButton.onClick.RemoveAllListeners();
-                    selectButton.onClick.AddListener(OnSelectButtonClicked);
-                }
-            }
         }
 
         private void PopulateIngredients()
@@ -68,23 +59,50 @@ namespace GroceryGame.UI
                 Destroy(child.gameObject);
             }
 
+            // Set the spacing on the Vertical Layout Group
+            VerticalLayoutGroup layoutGroup = ingredientsContainer.GetComponent<VerticalLayoutGroup>();
+            if (layoutGroup != null)
+            {
+                layoutGroup.spacing = ingredientSpacing;
+            }
+
             // Add ingredient items
             foreach (var ingredient in recipe.requiredIngredients)
             {
-                // For now, create simple text items
-                // We'll enhance this when we create IngredientItemUI
-                GameObject ingredientObj = new GameObject("Ingredient");
-                ingredientObj.transform.SetParent(ingredientsContainer);
+                GameObject ingredientObj;
+                TextMeshProUGUI ingredientText;
 
-                TextMeshProUGUI ingredientText = ingredientObj.AddComponent<TextMeshProUGUI>();
+                // Use the prefab if assigned, otherwise create manually
+                if (ingredientItemPrefab != null)
+                {
+                    // PROPER WAY: Use the assigned prefab
+                    ingredientObj = Instantiate(ingredientItemPrefab, ingredientsContainer);
+                    ingredientText = ingredientObj.GetComponent<TextMeshProUGUI>();
+
+                    if (ingredientText == null)
+                    {
+                        Debug.LogError("Ingredient Item Prefab doesn't have TextMeshProUGUI component!");
+                        continue;
+                    }
+                }
+                else
+                {
+                    // FALLBACK: Create manually (with black text!)
+                    ingredientObj = new GameObject("Ingredient");
+                    ingredientObj.transform.SetParent(ingredientsContainer);
+
+                    ingredientText = ingredientObj.AddComponent<TextMeshProUGUI>();
+                    ingredientText.fontSize = 14;
+                    ingredientText.color = Color.black;  // BLACK text instead of white
+
+                    // Reset transform
+                    RectTransform rect = ingredientObj.GetComponent<RectTransform>();
+                    rect.localScale = Vector3.one;
+                    rect.anchoredPosition = Vector2.zero;
+                }
+
+                // Set the ingredient text
                 ingredientText.text = $"• {ingredient.type} x{ingredient.quantity}";
-                ingredientText.fontSize = 14;
-                ingredientText.color = Color.white;
-
-                // Reset transform
-                RectTransform rect = ingredientObj.GetComponent<RectTransform>();
-                rect.localScale = Vector3.one;
-                rect.anchoredPosition = Vector2.zero;
             }
         }
 

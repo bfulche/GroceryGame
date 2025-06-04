@@ -10,6 +10,32 @@ namespace GroceryGame.UI
 {
     public class RecipeCarouselUI : MonoBehaviour
     {
+
+        [ContextMenu("Debug Layout")]
+        private void DebugLayout()
+        {
+            Debug.Log("=== Navigation Container Layout Debug ===");
+
+            Transform navigationContainer = transform.parent; // Assuming RecipeCarouselUI is on Navigation Container
+
+            for (int i = 0; i < navigationContainer.childCount; i++)
+            {
+                Transform child = navigationContainer.GetChild(i);
+                RectTransform rect = child.GetComponent<RectTransform>();
+
+                Debug.Log($"Child {i}: {child.name}");
+                Debug.Log($"  Active: {child.gameObject.activeInHierarchy}");
+                Debug.Log($"  Size: {rect.rect.size}");
+                Debug.Log($"  Position: {rect.anchoredPosition}");
+
+                if (child.name.Contains("Select"))
+                {
+                    Button button = child.GetComponent<Button>();
+                    Debug.Log($"  Button interactable: {(button != null ? button.interactable.ToString() : "No Button component")}");
+                }
+            }
+        }
+
         [Header("Navigation")]
         [SerializeField] private Button leftArrowButton;
         [SerializeField] private Button rightArrowButton;
@@ -37,8 +63,23 @@ namespace GroceryGame.UI
 
         public void InitializeCarousel(List<Recipe> recipes)
         {
+            Debug.Log($"RecipeCarouselUI.InitializeCarousel called with {recipes.Count} recipes");
+
             availableRecipes = recipes;
             currentRecipeIndex = 0;
+
+            // Check if we have the required components
+            if (recipeDisplayArea == null)
+            {
+                Debug.LogError("Recipe Display Area is NULL! Make sure it's assigned in RecipeCarouselUI inspector");
+                return;
+            }
+
+            if (recipeCardPrefab == null)
+            {
+                Debug.LogError("Recipe Card Prefab is NULL! Make sure it's assigned in RecipeCarouselUI inspector");
+                return;
+            }
 
             // Show first recipe
             if (availableRecipes.Count > 0)
@@ -78,9 +119,12 @@ namespace GroceryGame.UI
 
         private void ShowRecipeAtIndex(int index)
         {
+            Debug.Log($"ShowRecipeAtIndex called with index {index}");
+
             // Destroy current recipe card if it exists
             if (currentRecipeCard != null)
             {
+                Debug.Log("Destroying existing recipe card");
                 Destroy(currentRecipeCard);
             }
 
@@ -88,21 +132,60 @@ namespace GroceryGame.UI
             if (index >= 0 && index < availableRecipes.Count)
             {
                 Recipe recipe = availableRecipes[index];
+                Debug.Log($"Creating recipe card for: {recipe.recipeName}");
+
                 currentRecipeCard = Instantiate(recipeCardPrefab, recipeDisplayArea);
+
+                if (currentRecipeCard == null)
+                {
+                    Debug.LogError("Failed to instantiate recipe card prefab!");
+                    return;
+                }
+
+                Debug.Log("Recipe card instantiated successfully");
+
+                // Check if the card is active
+                Debug.Log($"Recipe card active: {currentRecipeCard.activeInHierarchy}");
+                Debug.Log($"Recipe card name: {currentRecipeCard.name}");
+
+                // Check parent
+                Debug.Log($"Parent: {recipeDisplayArea.name}");
+                Debug.Log($"Parent active: {recipeDisplayArea.gameObject.activeInHierarchy}");
 
                 // Initialize the recipe card
                 RecipeCardUI cardUI = currentRecipeCard.GetComponent<RecipeCardUI>();
                 if (cardUI != null)
                 {
+                    Debug.Log("RecipeCardUI found, initializing with recipe data"); 
                     cardUI.Initialize(recipe, false); // false = don't show select button on card
+                }
+                else
+                {
+                    Debug.LogError("RecipeCardUI component not found on instantiated recipe card prefab!");
                 }
 
                 // Make sure it fills the display area
                 RectTransform cardRect = currentRecipeCard.GetComponent<RectTransform>();
-                cardRect.anchorMin = Vector2.zero;
-                cardRect.anchorMax = Vector2.one;
-                cardRect.offsetMin = Vector2.zero;
-                cardRect.offsetMax = Vector2.zero;
+                if (cardRect != null)
+                {
+                    cardRect.anchorMin = Vector2.zero;
+                    cardRect.anchorMax = Vector2.one;
+                    cardRect.offsetMin = Vector2.zero;
+                    cardRect.offsetMax = Vector2.zero;
+                    Debug.Log($"Recipe card RectTransform - Size: {cardRect.rect.size}");
+                    Debug.Log($"Recipe card RectTransform - Position: {cardRect.anchoredPosition}");
+                    Debug.Log($"Display area RectTransform - Size: {recipeDisplayArea.GetComponent<RectTransform>().rect.size}");
+
+                    Debug.Log("Recipe card positioned to fill display area");
+                }
+                else
+                {
+                    Debug.LogError("Recipe card does not have RectTransform component!");
+                }
+            }
+            else
+            {
+                Debug.LogError($"Invalid recipe index: {index}. Available recipes count: {availableRecipes.Count}");
             }
         }
 
@@ -168,3 +251,4 @@ namespace GroceryGame.UI
         }
     }
 }
+

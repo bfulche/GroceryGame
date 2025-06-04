@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using GroceryGame.Data;
+using GroceryGame.Core; // This is important for accessing GameManager and GameStateg
 
 namespace GroceryGame.UI
 {
@@ -44,8 +45,18 @@ namespace GroceryGame.UI
                 RecipeCarouselUI carousel = recipeSelectionPanel.GetComponentInChildren<RecipeCarouselUI>();
                 if (carousel != null)
                 {
+                    Debug.Log("RecipeCarouselUI found, initializing carousel");
                     carousel.InitializeCarousel(recipes);
                 }
+                else
+                {
+                    Debug.LogError("RecipeCarouselUI component not found in Recipe Selection Panel or its children!");
+                    Debug.LogError("Make sure RecipeCarouselUI script is attached to the Recipe Selection Panel or a child object");
+                }
+            }
+            else
+            {
+                Debug.LogError("Recipe Selection Panel is NULL! Make sure it's assigned in UIManager inspector");
             }
         }
 
@@ -96,8 +107,40 @@ namespace GroceryGame.UI
         // Button handlers
         public void OnStartButtonClicked()
         {
-            // We'll add this functionality once GameManager is working
             Debug.Log("Start button clicked");
+
+            // Check if GameManager exists
+            if (GameManager.Instance == null)
+            {
+                Debug.LogError("GameManager.Instance is NULL! Make sure GameManager is in the scene.");
+                return;
+            }
+
+            // Transition to Recipe Selection state
+            GameManager.Instance.TransitionToState(GameState.RecipeSelection);
         }
+
+        // Handle back button from recipe selection
+        public void OnRecipeSelectionBackClicked()
+        {
+            Debug.Log("Recipe selection back button clicked");
+
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.TransitionToState(GameState.MainMenu);
+            }
+        }
+
+        // Handle back button from store selection
+        public void OnStoreSelectionBackClicked()
+        {
+            Debug.Log("Store selection back button clicked");
+
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.TransitionToState(GameState.RecipeSelection);
+            }
+        }
+
     }
 }
