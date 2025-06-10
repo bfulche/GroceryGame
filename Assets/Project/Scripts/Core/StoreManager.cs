@@ -26,7 +26,7 @@ namespace GroceryGame.Core
 
         // Refresh the list of available stores
         public void RefreshAvailableStores()
-        {
+        {            
             availableStores.Clear();
 
             // For the POC, all stores that are marked as starting stores are available

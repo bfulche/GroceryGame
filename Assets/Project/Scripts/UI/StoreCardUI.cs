@@ -45,17 +45,17 @@ namespace GroceryGame.UI
                 if (store.priceModifier < 1.0f)
                 {
                     priceModifierText.text = "Budget Friendly";
-                    priceModifierText.color = Color.green;
+                    priceModifierText.color = Color.black;
                 }
                 else if (store.priceModifier > 1.0f)
                 {
                     priceModifierText.text = "Premium Prices";
-                    priceModifierText.color = Color.yellow;
+                    priceModifierText.color = Color.black;
                 }
                 else
                 {
                     priceModifierText.text = "Standard Prices";
-                    priceModifierText.color = Color.white;
+                    priceModifierText.color = Color.black;
                 }
             }
 

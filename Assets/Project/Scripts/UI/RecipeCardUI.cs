@@ -19,6 +19,7 @@ namespace GroceryGame.UI
 
         [Header("Layout Settings")]
         [SerializeField] private float ingredientSpacing = 8f; // Adjustable in inspector
+        [SerializeField] private float ingredientFontSize = 34f; //font size for ingredients list
 
         private Recipe recipe;
 
@@ -84,6 +85,9 @@ namespace GroceryGame.UI
                         Debug.LogError("Ingredient Item Prefab doesn't have TextMeshProUGUI component!");
                         continue;
                     }
+
+                    //Apply font size to prefab instance
+                    ingredientText.fontSize = ingredientFontSize;
                 }
                 else
                 {
@@ -92,7 +96,7 @@ namespace GroceryGame.UI
                     ingredientObj.transform.SetParent(ingredientsContainer);
 
                     ingredientText = ingredientObj.AddComponent<TextMeshProUGUI>();
-                    ingredientText.fontSize = 14;
+                    ingredientText.fontSize = 34;
                     ingredientText.color = Color.black;  // BLACK text instead of white
 
                     // Reset transform
