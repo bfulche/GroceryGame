@@ -1,7 +1,9 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 using GroceryGame.Data;
 using GroceryGame.UI;
+using UnityEngine.UI;
 
 namespace GroceryGame.Core
 {
@@ -165,6 +167,37 @@ namespace GroceryGame.Core
 
             // Load the appropriate store scene
             SceneManager.LoadScene(_selectedStore.sceneName);
+
+            // Initialize shopping UI after scene loads
+            StartCoroutine(InitializeShoppingUI());
+        }
+
+        private IEnumerator InitializeShoppingUI()
+        {
+            yield return new WaitForSeconds(0.1f); // Wait for scene to fully load
+
+            // Find or create shopping list UI
+            ShoppingListUI shoppingList = FindObjectOfType<ShoppingListUI>();
+            if (shoppingList == null)
+            {
+                // Create shopping list UI
+                GameObject canvas = GameObject.Find("GameCanvas");
+                if (canvas == null)
+                {
+                    canvas = new GameObject("GameCanvas");
+                    Canvas c = canvas.AddComponent<Canvas>();
+                    c.renderMode = RenderMode.ScreenSpaceOverlay;
+                    canvas.AddComponent<CanvasScaler>();
+                    canvas.AddComponent<GraphicRaycaster>();
+                }
+
+                GameObject shoppingListObj = new GameObject("ShoppingListUI");
+                shoppingListObj.transform.SetParent(canvas.transform, false);
+                shoppingList = shoppingListObj.AddComponent<ShoppingListUI>();
+            }
+
+            Debug.Log("Shopping UI initialized");
+
         }
 
         // Handle scene loading completion
