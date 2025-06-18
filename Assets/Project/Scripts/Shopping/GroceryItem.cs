@@ -69,11 +69,11 @@ namespace GroceryGame.Shopping
         {
             if (isInCart)
             {
-                return $"Hold to remove {itemName} from cart";
+                return $"Click to remove {itemName} from cart";
             }
             else
             {
-                return $"Hold to pick up {itemName}";
+                return $"Click to pick up {itemName}";
             }
         }
 
@@ -153,8 +153,8 @@ namespace GroceryGame.Shopping
             if (playerCamera != null)
             {
                 transform.SetParent(playerCamera.transform);
-                // Center the item in front of the player
-                transform.localPosition = new Vector3(0f, -0.1f, 0.8f);
+                // Center the item in front of the player at a comfortable distance
+                transform.localPosition = new Vector3(0f, -0.2f, 1.5f);
                 transform.localRotation = Quaternion.identity;
             }
 
@@ -231,13 +231,36 @@ namespace GroceryGame.Shopping
             // Return to original parent or world
             transform.SetParent(originalParent);
 
-            // Place in front of player
-            transform.position = player.transform.position + player.transform.forward * 1.5f + Vector3.down * 0.5f;
+            // Get current world position before changing parent
+            Vector3 dropPosition = transform.position;
+
+            // If we're above a cart, drop straight down
+            RaycastHit hit;
+            if (Physics.Raycast(dropPosition, Vector3.down, out hit, 5f))
+            {
+                // Drop to hit point with small offset
+                dropPosition = hit.point + Vector3.up * 0.1f;
+            }
+            else
+            {
+                // Drop in front of player at ground level
+                dropPosition = player.transform.position + player.transform.forward * 1.5f;
+                // Raycast down to find ground
+                if (Physics.Raycast(dropPosition + Vector3.up, Vector3.down, out hit, 10f))
+                {
+                    dropPosition = hit.point + Vector3.up * 0.1f;
+                }
+            }
+
+            transform.position = dropPosition;
             transform.rotation = originalRotation;
 
             // Re-enable physics
             rb.isKinematic = false;
             col.enabled = true;
+
+            // Give a small downward velocity to ensure it falls
+            rb.linearVelocity = Vector3.down * 0.5f;
 
             // Clear held state
             isHeld = false;

@@ -121,24 +121,16 @@ namespace GroceryGame.Core
 
         private void HandleInteractionInput()
         {
-            // Left click and hold to interact
-            if (Input.GetMouseButton(0))
+            // Left click to toggle interact
+            if (Input.GetMouseButtonDown(0))
             {
-                interactionSystem.HoldInteract();
-            }
-            else if (Input.GetMouseButtonUp(0))
-            {
-                interactionSystem.ReleaseInteract();
+                interactionSystem.ToggleInteract();
             }
 
-            // Right click for item examination (if holding item)
-            if (Input.GetMouseButton(1))
+            // Right click to toggle item examination (if holding item)
+            if (Input.GetMouseButtonDown(1))
             {
-                interactionSystem.StartExamineHeldItem();
-            }
-            else if (Input.GetMouseButtonUp(1))
-            {
-                interactionSystem.StopExamineHeldItem();
+                interactionSystem.ToggleExamineHeldItem();
             }
         }
 

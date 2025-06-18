@@ -243,6 +243,10 @@ namespace GroceryGame.UI
                     listItem = itemObj.AddComponent<IngredientListItem>();
                 }
 
+                // Set up references to UI elements
+                listItem.checkmark = itemObj.transform.Find("Checkbox").GetComponent<Image>();
+                listItem.label = itemObj.transform.Find("Text").GetComponent<Text>();
+
                 listItem.Setup(requirement);
                 ingredientItems.Add(listItem);
             }
@@ -283,10 +287,8 @@ namespace GroceryGame.UI
             LayoutElement textLayout = textObj.AddComponent<LayoutElement>();
             textLayout.flexibleWidth = 1;
 
-            // Store references
+            // Add IngredientListItem component after creating UI elements
             IngredientListItem item = prefab.AddComponent<IngredientListItem>();
-            item.checkmark = checkImg;
-            item.label = text;
 
             return prefab;
         }

@@ -73,7 +73,7 @@ namespace GroceryGame.UI
 
             // Scale up and center the item
             itemTransform.localScale = originalScale * examineScale;
-            itemTransform.localPosition = new Vector3(0f, 0f, 0.8f);
+            itemTransform.localPosition = new Vector3(0f, 0f, 2.5f);
             itemTransform.localRotation = Quaternion.identity;
 
             // Update UI elements

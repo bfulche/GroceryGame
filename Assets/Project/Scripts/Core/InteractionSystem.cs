@@ -107,35 +107,53 @@ namespace GroceryGame.Core
             }
         }
 
-        public void HoldInteract()
+        public void ToggleInteract()
         {
-            if (!isHoldingInteraction && currentInteractable != null && currentInteractable.CanInteract())
+            // If holding an item
+            if (heldItem != null)
             {
-                isHoldingInteraction = true;
-                currentInteractable.OnStartInteract(gameObject);
-            }
-        }
-
-        public void ReleaseInteract()
-        {
-            if (isHoldingInteraction)
-            {
-                isHoldingInteraction = false;
-
-                // If we have a held item, drop it
-                if (heldItem != null)
+                // Check if we're looking at the cart
+                ShoppingCart cart = currentTarget?.GetComponent<ShoppingCart>();
+                if (cart != null && cart.CanAddItem())
                 {
+                    // Place item in cart through the item's logic
                     heldItem.OnEndInteract(gameObject);
                 }
-                // If we were holding something else (like cart), release it
-                else if (currentInteractable != null && currentInteractable.IsHoldable())
+                else
                 {
-                    currentInteractable.OnEndInteract(gameObject);
+                    // Drop the item
+                    heldItem.OnEndInteract(gameObject);
+                }
+            }
+            // If looking at cart and not holding item
+            else if (currentTarget != null)
+            {
+                ShoppingCart cart = currentTarget.GetComponent<ShoppingCart>();
+                if (cart != null)
+                {
+                    cart.OnStartInteract(gameObject);
+                }
+                else if (currentInteractable != null && currentInteractable.CanInteract())
+                {
+                    // Regular interaction (pick up item)
+                    currentInteractable.OnStartInteract(gameObject);
                 }
             }
         }
 
-        public void StartExamineHeldItem()
+        public void ToggleExamineHeldItem()
+        {
+            if (isExamining)
+            {
+                StopExamineHeldItem();
+            }
+            else
+            {
+                StartExamineHeldItem();
+            }
+        }
+
+        private void StartExamineHeldItem()
         {
             if (heldItem != null && !isExamining)
             {
@@ -171,7 +189,7 @@ namespace GroceryGame.Core
             }
         }
 
-        public void StopExamineHeldItem()
+        private void StopExamineHeldItem()
         {
             if (isExamining)
             {
@@ -239,7 +257,7 @@ namespace GroceryGame.Core
             GameObject textObj = new GameObject("Text");
             textObj.transform.SetParent(interactionPromptUI.transform, false);
             interactionPromptText = textObj.AddComponent<Text>();
-            interactionPromptText.text = "Hold Left Click to Interact";
+            interactionPromptText.text = "Click to Interact";
             interactionPromptText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             interactionPromptText.fontSize = 20;
             interactionPromptText.color = Color.white;
